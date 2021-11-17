@@ -25,29 +25,11 @@ list_1 <- list(DLSP,
              tx_impl_DLSP,
              cronop_DLSP)
 
-st <- as.Date("2001/12/01")
-seq <- seq(st, by = "month", along.with = (DLSP[1,]-2))
-
-data_1 <- lapply(list_1, function(x) {x <- x %>% 
-  filter(!is.na(x[,3])) %>% 
-  select(-c(1,2)) %>% 
-  `colnames<-`(seq); return(x)})
-
-
 #%% inicio da serie em 2006/12/01
 
 list_2 <- list(fc_DBGG,
-                  fc_DBGG_det_estoques,
-                  cronop_DBGG)
-
-st <- as.Date("2006/12/01")
-seq <- seq(st, by = "month", along.with = (fc_DBGG[1,]-2))
-
-data_2 <- lapply(list_2, function(x) {x <- x %>% 
-  filter(!is.na(x[,3])) %>% 
-  select(-c(1,2)) %>% 
-  `colnames<-`(seq); return(x)})
-
+               fc_DBGG_det_estoques,
+               cronop_DBGG)
 
 #%% inicio da serie em 2007/01/01
 
@@ -61,6 +43,29 @@ list_3 <- list(DBGG_2008,
                fc_DBGG_det_recdiv,
                tx_impl_DBGG)
 
+
+# lapplay lista 1
+
+st <- as.Date("2001/12/01")
+seq <- seq(st, by = "month", along.with = (DLSP[1,]-2))
+
+data_1 <- lapply(list_1, function(x) {x <- x %>% 
+  filter(!is.na(x[,3])) %>% 
+  select(-c(1,2)) %>% 
+  `colnames<-`(seq); return(x)})
+
+#%% laplay lista 2
+
+st <- as.Date("2006/12/01")
+seq <- seq(st, by = "month", along.with = (fc_DBGG[1,]-2))
+
+data_2 <- lapply(list_2, function(x) {x <- x %>% 
+  filter(!is.na(x[,3])) %>% 
+  select(-c(1,2)) %>% 
+  `colnames<-`(seq); return(x)})
+
+#%% laplay lista 3
+
 st <- as.Date("2007/01/01")
 seq <- seq(st, by = "month", along.with = (DBGG_2008[1,]-2))
 
@@ -68,6 +73,8 @@ data_3 <- lapply(list_3, function(x) {x <- x %>%
   filter(!is.na(x[,3])) %>% 
   select(-c(1,2)) %>% 
   `colnames<-`(seq); return(x)})
+
+
 
 # 18/11
 
