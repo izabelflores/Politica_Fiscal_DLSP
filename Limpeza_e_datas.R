@@ -1,10 +1,6 @@
-
-
 #%% Limpeza
 
 #%% Tabelas Horizontais, por data
-
-# (tirar NA's)
 
 #%% inicio da serie em 2001/12/01
 
@@ -113,10 +109,15 @@ fc_DBGG_det_privat <- as.data.frame(data_3[[7]])
 fc_DBGG_det_recdiv <- as.data.frame(data_3[[8]])
 tx_impl_DBGG <- as.data.frame(data_3[[9]])
 
+#%% Tabelas Verticais, por data
+
+
+
 #%% tabela de Divida liquida
 
 Divida_liquida <- bind_rows(DLSP, #238
                             tx_impl_DLSP, #238
+                            # colocar indexador
                             cronop_DLSP, #238
                             fc_DLSP_det_primario, #238
                             fc_DLSP_det_juros, #238
@@ -135,3 +136,23 @@ remove(DLSP,tx_impl_DLSP, cronop_DLSP,
 
 write_excel_csv2(Divida_liquida, 
                 "C:/Users/izabe/Desktop/Github/Politica_Fiscal_DLSP/Divida_liquida.csv")
+
+#%% tabela de Divida bruta
+
+cronop_DBGG <- cronop_DBGG %>% 
+  dplyr::select(-"2006-12-01")
+
+Divida_bruta <- bind_rows(DBGG_2008, #177
+                          tx_impl_DBGG, #177
+                          # colocar indexador
+                          cronop_DBGG, #177
+                          fc_DBGG_det_ajcamext, #177
+                          fc_DBGG_det_ajcamint, #177
+                          fc_DBGG_det_divexoutros, #177
+                          fc_DBGG_det_emissoes, #177
+                          fc_DBGG_det_juros, #177
+                          fc_DBGG_det_privat, #177
+                          fc_DBGG_det_recdiv) #177
+
+write_excel_csv2(Divida_bruta, 
+                 "C:/Users/izabe/Desktop/Github/Politica_Fiscal_DLSP/Divida_bruta.csv")
