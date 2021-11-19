@@ -119,8 +119,10 @@ Divida_liquida <- bind_rows(DLSP, #238
                             tx_impl_DLSP, #238
                             # colocar indexador
                             cronop_DLSP, #238
+                            NFSP_fontes, #238 forma de financiamento
                             fc_DLSP_det_primario, #238
                             fc_DLSP_det_juros, #238
+                            NFSP_usos, #238 atualizacao monetaria e juros externos e internos
                             fc_DLSP_det_metint, #328
                             fc_DLSP_det_metext, #238
                             fc_DLSP_det_paridade, #238
