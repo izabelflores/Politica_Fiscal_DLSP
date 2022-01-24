@@ -44,32 +44,41 @@ list_3 <- list(DBGG_2008,
 # lapplay lista 1
 
 st <- as.Date("2001/12/01")
-seq <- seq(st, by = "month", along.with = (DLSP[1,]-2))
+seq <- seq(st, by = "month", along.with = (DLSP[1,]))
+seq <- as.character(seq)
+nomes <- c("XXXXX", "XXXXXX")
+datas <- c(nomes, seq)
 
 data_1 <- lapply(list_1, function(x) {x <- x %>% 
-  filter(!is.na(x[,3])) %>% 
-  select(-c(1,2)) %>% 
-  `colnames<-`(seq); return(x)})
+  filter(!is.na(x[,1])) %>%
+  mutate_if(is.numeric,as.character) %>% 
+  `colnames<-`(datas); return(x)})
 
 #%% laplay lista 2
 
 st <- as.Date("2006/12/01")
-seq <- seq(st, by = "month", along.with = (fc_DBGG[1,]-2))
+seq <- seq(st, by = "month", along.with = (fc_DBGG[1,]))
+seq <- as.character(seq)
+nomes <- c("XXXXX", "XXXXXX")
+datas <- c(nomes, seq)
 
 data_2 <- lapply(list_2, function(x) {x <- x %>% 
-  filter(!is.na(x[,3])) %>% 
-  select(-c(1,2)) %>% 
-  `colnames<-`(seq); return(x)})
+  filter(!is.na(x[,1])) %>%
+  mutate_if(is.numeric,as.character) %>% 
+  `colnames<-`(datas); return(x)})
 
 #%% laplay lista 3
 
 st <- as.Date("2007/01/01")
-seq <- seq(st, by = "month", along.with = (DBGG_2008[1,]-2))
+seq <- seq(st, by = "month", along.with = (DBGG_2008[1,]))
+seq <- as.character(seq)
+nomes <- c("XXXXX", "XXXXXX")
+datas <- c(nomes, seq)
 
 data_3 <- lapply(list_3, function(x) {x <- x %>% 
-  filter(!is.na(x[,3])) %>% 
-  select(-c(1,2)) %>% 
-  `colnames<-`(seq); return(x)})
+  filter(!is.na(x[,1])) %>%
+  mutate_if(is.numeric,as.character) %>% 
+  `colnames<-`(datas); return(x)})
 
 #%% tornando dataframes
 
@@ -115,11 +124,11 @@ tx_impl_DBGG <- as.data.frame(data_3[[9]])
 
 #%% tabela de Divida liquida
 
-Divida_liquida <- bind_rows(DLSP, #238
-                            tx_impl_DLSP, #238
+Divida_liquida <- bind_rows(DLSP, #242
+                            tx_impl_DLSP, #242
                             # colocar indexador
-                            cronop_DLSP, #238
-                            NFSP_fontes, #238 forma de financiamento
+                            cronop_DLSP, #242
+                            NFSP_fontes, #242 forma de financiamento
                             fc_DLSP_det_primario, #238
                             fc_DLSP_det_juros, #238
                             NFSP_usos, #238 atualizacao monetaria e juros externos e internos
@@ -135,9 +144,6 @@ remove(DLSP,tx_impl_DLSP, cronop_DLSP,
        fc_DLSP_det_metint, fc_DLSP_det_metext,
        fc_DLSP_det_paridade, fc_DLSP_det_cxcomp,
        fc_DLSP_det_recdiv, fc_DLSP_det_privat, data_1)
-
-write_excel_csv2(Divida_liquida, 
-                "C:/Users/izabe/Desktop/Github/Politica_Fiscal_DLSP/Divida_liquida.csv")
 
 #%% tabela de Divida bruta
 
@@ -156,5 +162,42 @@ Divida_bruta <- bind_rows(DBGG_2008, #177
                           fc_DBGG_det_privat, #177
                           fc_DBGG_det_recdiv) #177
 
+remove(DBGG_2008,
+       tx_impl_DBGG,
+       # colocar indexador
+       cronop_DBGG,
+       fc_DBGG_det_ajcamext,
+       fc_DBGG_det_ajcamint,
+       fc_DBGG_det_divexoutros,
+       fc_DBGG_det_emissoes,
+       fc_DBGG_det_juros,
+       fc_DBGG_det_privat,
+       fc_DBGG_det_recdiv)
+
 write_excel_csv2(Divida_bruta, 
                  "C:/Users/izabe/Desktop/Github/Politica_Fiscal_DLSP/Divida_bruta.csv")
+
+a <- as.data.frame(t(Divida_liquida))
+b <- as.data.frame(t(Divida_bruta))
+
+names <- rownames(a)
+rownames(a) <- NULL
+a <- cbind(names,a)
+
+names <- rownames(b)
+rownames(b) <- NULL
+b <- cbind(names,b)
+
+c <- full_join(a, b, by = "names")
+
+data <- as.data.frame(t(c))
+
+names <- data[,1]
+rownames(data) <- names
+names <- data[1,]
+colnames(data) <- names
+
+data <- data %>% 
+  select(-"XXXXXX") %>% 
+  filter(XXXXX != "XXXXX")
+
