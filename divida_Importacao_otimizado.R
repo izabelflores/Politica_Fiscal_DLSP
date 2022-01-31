@@ -1,6 +1,6 @@
 # Importando dívida (funções)
 
-#### library ####
+#### library #####
 
 library(purrr)
 library(dplyr)
@@ -8,235 +8,129 @@ library(stringr)
 library(readxl)
 library(tidyr)
 library(ggplot2)
-library(jantior)
 
-  # pra puxar as urls
-  
-  sufixos_xls <- c("Divggp.xls", "Divggnp.xls", "Facdbp.xls", "Facdetdbp.xls", "Dlspindexp.xls",
-                   "Dlspp.xls", "Evodlp.xls", "Facdetp.xls", "Dlspindexp.xls", "Nfspusop.xls",
-                   "DivMobp.xls", "Tximplnp.xls", "Cronop.xls")
-  
-  url_divida <- paste0(
-    "https://www.bcb.gov.br/content/estatisticas/Documents/Tabelas_especiais/",
-    sufixos_xls
-  ) %>%
-    as.list() %>%
-    set_names(sufixos_xls)
-  
+#### baixar arquivos ####
 
 
+ # montar urls
 
-  
-  # baixa os arquivos em tempfile
-  
-  purrr::walk2(
-    url_divida, # as urls
-    url_divida %>% names(), # os nomes dos itens nas listas que são os anos
-    ~ download.file(.x, # passa cada item do primeiro vetor
-                    destfile = paste0(tempdir(), "\\divida", .y), # segundo item do vetor
-                    mode = "wb"
-    )
-  ) # modo
-  
- 
-   path <- paste0(tempdir(), "\\divida", sufixos_xls)
+sufixos_xls <-
+  c(
+    "Divggp.xls",
+    "Divggnp.xls",
+    "Facdbp.xls",
+    "Facdetdbp.xls",
+    "Dlspindexp.xls",
+    "Dlspp.xls",
+    "Evodlp.xls",
+    "Facdetp.xls",
+    "Dlspindexp.xls",
+    "Nfspusop.xls",
+    "DivMobp.xls",
+    "Tximplnp.xls",
+    "Cronop.xls"
+  )
+
+url_divida <- paste0(
+  "https://www.bcb.gov.br/content/estatisticas/Documents/Tabelas_especiais/",
+  sufixos_xls
+) %>%
+  as.list() %>%
+  set_names(sufixos_xls)
 
 
+ # baixar arquivos em pasta temporaria
+
+purrr::walk2(
+  url_divida,
+  url_divida %>% names(),
+  ~ download.file(.x, 
+                  destfile = paste0(tempdir(),
+                                    "\\divida", 
+                                    .y
+                  ),
+                  mode = "wb"
+  )
+)
+
+ # caminho pastas
+
+path <- paste0(tempdir(), "\\divida", sufixos_xls)
 
 #### lendo sheets ####
 
-# divida bruta
 
-DBGG_2007 <- read_excel(path[1],
-                        sheet = "R$ milhões",
-                        skip=9,
-                        col_names = FALSE)
-
-DBGG_2008 <- read_excel(path[2],
-                        sheet = "R$ milhões",
-                        skip=9,
-                        col_names = FALSE)
-
-fc_DBGG <- read_excel(path[3],
-                      sheet = "Fluxos mensais",
-                      skip=9,
-                      col_names = FALSE)
-
-fc_DBGG_det_estoques <- read_excel(path[4],
-                                   sheet = "Estoques",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DBGG_det_emissoes <- read_excel(path[4],
-                                   sheet = "Emissões",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DBGG_det_juros <- read_excel(path[4],
-                                sheet = "Juros",
-                                skip=9,
-                                col_names = FALSE)
-
-fc_DBGG_det_ajcamint <- read_excel(path[4],
-                                   sheet = "Aj Cam Int",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DBGG_det_ajcamext <- read_excel(path[4],
-                                   sheet = "Aj Cam Ext",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DBGG_det_divexoutros <- read_excel(path[4],
-                                      sheet = "Div Ex Outros",
-                                      skip=9,
-                                      col_names = FALSE)
-
-fc_DBGG_det_recdiv <- read_excel(path[4],
-                                 sheet = "Rec Div",
-                                 skip=9,
-                                 col_names = FALSE)
-
-fc_DBGG_det_privat <- read_excel(path[4],
-                                 sheet = "Privat",
-                                 skip=9,
-                                 col_names = FALSE)
-
-DBGG_index_divida <- read_excel(path[5],
-                                sheet = "DividaR$",
-                                skip=11,
-                                col_names = FALSE)
-
-DBGG_index_primario <- read_excel(path[5],
-                                  sheet = "PrimarioR$",
-                                  skip=11,
-                                  col_names = FALSE)
-
-DBGG_index_juros <- read_excel(path[5],
-                               sheet = "JurosR$",
-                               skip=11,
-                               col_names = FALSE)
-
-# divida liquida
-
-DLSP <- read_excel(path[6],
-                   sheet = "R$ milhões",
-                   skip=9,
-                   col_names = FALSE)
-
-fc_DLSP <- read_excel(path[7],
-                      sheet = "Fluxos mensais por esfera",
-                      skip=9,
-                      col_names = FALSE)
-
-fc_DLSP_det_estoques <- read_excel(path[8],
-                                   sheet = "Estoques",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DLSP_det_primario <- read_excel(path[8],
-                                   sheet = "Primário",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DLSP_det_juros <- read_excel(path[8],
-                                sheet = "Juros",
-                                skip=9,
-                                col_names = FALSE)
-
-fc_DLSP_det_metint <- read_excel(path[8],
-                                 sheet = "Met Int",
-                                 skip=9,
-                                 col_names = FALSE)
-
-fc_DLSP_det_metext <- read_excel(path[8],
-                                 sheet = "Met Ext",
-                                 skip=9,
-                                 col_names = FALSE)
-
-fc_DLSP_det_paridade <- read_excel(path[8],
-                                   sheet = "Paridade",
-                                   skip=9,
-                                   col_names = FALSE)
-
-fc_DLSP_det_cxcomp <- read_excel(path[8],
-                                 sheet = "Cx Comp",
-                                 skip=9,
-                                 col_names = FALSE)
-
-fc_DLSP_det_recdiv <- read_excel(path[8],
-                                 sheet = "Rec Div",
-                                 skip=9,
-                                 col_names = FALSE)
-
-fc_DLSP_det_privat <- read_excel(path[8],
-                                 sheet = "Privat",
-                                 skip=9,
-                                 col_names = FALSE)
-
-DLSP_index_divida <- read_excel(path[9],
-                                sheet = "DividaR$",
-                                skip=11,
-                                col_names = FALSE)
-
-DLSP_index_primario <- read_excel(path[9],
-                                  sheet = "PrimarioR$",
-                                  skip=11,
-                                  col_names = FALSE)
-
-DLSP_index_juros <- read_excel(path[9],
-                               sheet = "JurosR$",
-                               skip=11,
-                               col_names = FALSE)
-
-NFSP_usos <- read_excel(path[10],
-                        sheet = "Usos",
-                        skip=9,
-                        col_names = FALSE)
-
-NFSP_fontes <- read_excel(path[10],
-                          sheet = "Fontes",
-                          skip=9,
-                          col_names = FALSE)
-
-Div_mob_vencimentos <- read_excel(path[11],
-                                  sheet = "Perfil de vencimentos",
-                                  skip=25,
-                                  col_names = FALSE)
-
-Div_mob_posicao_carteira <- read_excel(path[11],
-                                       sheet = "Estoque Posição de Carteira",
-                                       skip=32,
-                                       col_names = FALSE)
-
-Div_mob_indexador <- read_excel(path[11],
-                                sheet = "Participação por indexador",
-                                skip=107,
-                                col_names = FALSE)
-
-tx_impl_DLSP <- read_excel(path[12],
-                           sheet = "DLSP_mensal",
-                           skip=9,
-                           col_names = FALSE)
-
-tx_impl_DBGG <- read_excel(path[12],
-                           sheet = "DBGG_mensal",
-                           skip=9,
-                           col_names = FALSE)
-
-cronop_DLSP <- read_excel(path[13],
-                          sheet = "Cronograma_DLSP",
-                          skip=9,
-                          col_names = FALSE)
-
-cronop_DBGG <- read_excel(path[13],
-                          sheet = "Cronograma_DBGG",
-                          skip=9,
-                          col_names = FALSE)
+# Nomes e dos parametros para leitura
 
 
+parametros <- 
+  
+  tribble(
+    
+    ~Nomes,                ~n_path ,    ~sheet,                    ~skip,
+    
+    #divida bruta
+    
+    "DBGG_2007",               1   ,  "R$ milhões",                     9,
+    "DBGG_2008",               2   ,  "R$ milhões",                     9,
+    "fc_DBGG",                 3   ,  "Fluxos mensais",                 9,
+    "fc_DBGG_det_estoques",    4   ,  "Estoques",                       9,
+    "fc_DBGG_det_emissoes",    4   ,  "Emissões",                       9,
+    "fc_DBGG_det_juros"   ,    4   ,  "Juros",                          9,
+    "fc_DBGG_det_ajcamint",    4   ,  "Aj Cam Int",                     9,
+    "fc_DBGG_det_ajcamext",    4   ,  "Aj Cam Ext",                     9,
+    "fc_DBGG_det_divexoutros", 4   ,  "Div Ex Outros",                  9,
+    "fc_DBGG_det_recdiv",      4   ,  "Rec Div",                        9,
+    "fc_DBGG_det_privat",      4   ,  "Privat",                         9,
+    "DBGG_index_divida",       5   ,  "DividaR$",                      11,
+    "DBGG_index_primario",     5   ,  "PrimarioR$",                    11,
+    "DBGG_index_juros",        5   ,  "JurosR$",                       11,
+    
+    #divida liquida
+    
+    "DLSP",                    6   ,  "R$ milhões",                     9,
+    "fc_DLSP",                 7   ,  "Fluxos mensais por esfera",      9,
+    "fc_DLSP_det_estoques",    8   ,  "Estoques",                       9,
+    "fc_DLSP_det_primario",    8   ,  "Estoques",                       9,
+    "fc_DLSP_det_ejuros",      8   ,  "Primário",                       9,
+    "fc_DLSP_det_estoques",    8   ,  "Juros",                          9,
+    "fc_DLSP_det_metint",      8   ,  "Met Int",                        9,
+    "fc_DLSP_det_metext",      8   ,  "Met Ext",                        9,
+    "fc_DLSP_det_paridade",    8   ,  "Paridade",                       9,
+    "fc_DLSP_det_cxcomp",      8   ,  "Cx Comp",                        9,
+    "fc_DLSP_det_recdiv",      8   ,  "Rec Div",                        9,
+    "fc_DLSP_det_privat",      8   ,  "Privat",                         9,
+    "DLSP_index_divida",       9   ,  "DividaR$",                      11,
+    "DLSP_index_primario",     9   ,  "PrimarioR$",                    11,
+    "DLSP_index_juros",        9   ,  "JurosR$",                       11,
+    "NFSP_usos",              10   ,  "Usos",                           9,
+    "NFSP_fontes",            10   ,  "Fontes",                         9,
+    "Div_mob_vencimentos",    11   ,  "Perfil de vencimentos",         25,
+    "Div_mob_posicao_cart",   11   ,  "Estoque Posição de Carteira",   32,
+    "Div_mob_indexador",      11   ,  "Participação por indexador",   107,
+    
+    "tx_impl_DLSP",           12   ,  "DLSP_mensal",                    9,
+    "tx_impl_DBGG",           12   ,  "DBGG_mensal",                    9,
+    "cronop_DLSP",            13   ,  "Cronograma_DLSP",                9,
+    "cronop_DBGG",            13   ,  "Cronograma_DBGG",                9
+  )
 
 
+# Função importacao tabelas
+
+importar_tabelas <- function(n_path, sheet, skip){
+  
+  readxl::read_excel(path[n_path],
+                     sheet     = sheet,
+                     skip      = skip,
+                     col_names = FALSE)
+  
+}
+
+# Leitura dos dados para uma lista com os elementos nomeados
 
 
+lista_dados_brutos <-
+  pmap(parametros[-1], importar_tabelas) %>%
+  set_names(parametros$Nomes) 
 
