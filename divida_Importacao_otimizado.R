@@ -8,6 +8,7 @@ library(stringr)
 library(readxl)
 library(tidyr)
 library(ggplot2)
+library(readr)
 
 #### baixar arquivos ####
 
@@ -45,8 +46,7 @@ purrr::walk2(
   url_divida,
   url_divida %>% names(),
   ~ download.file(.x, 
-                  destfile = paste0(tempdir(),
-                                    "\\divida", 
+                  destfile = paste0(tempdir(), 
                                     .y
                   ),
                   mode = "wb"
@@ -55,7 +55,7 @@ purrr::walk2(
 
  # caminho pastas
 
-path <- paste0(tempdir(), "\\divida", sufixos_xls)
+path <- paste0(tempdir(), sufixos_xls)
 
 #### lendo sheets ####
 
@@ -92,7 +92,7 @@ parametros <-
     "fc_DLSP",                 7   ,  "Fluxos mensais por esfera",      9,
     "fc_DLSP_det_estoques",    8   ,  "Estoques",                       9,
     "fc_DLSP_det_primario",    8   ,  "Estoques",                       9,
-    "fc_DLSP_det_ejuros",      8   ,  "Primário",                       9,
+    "fc_DLSP_det_juros",      8   ,  "Primário",                       9,
     "fc_DLSP_det_estoques",    8   ,  "Juros",                          9,
     "fc_DLSP_det_metint",      8   ,  "Met Int",                        9,
     "fc_DLSP_det_metext",      8   ,  "Met Ext",                        9,
